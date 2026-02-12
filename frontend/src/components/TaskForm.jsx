@@ -12,16 +12,27 @@ function TaskForm({ refreshTasks }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+
+
+
+
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await API.post("/tasks", form);
-      setForm({ title: "", description: "", deadline: "" });
-      refreshTasks();
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  e.preventDefault();
+  console.log("SUBMIT CLICKED", form); // 👈 test
+
+  try {
+    await API.post("/tasks", form);
+    setForm({ title: "", description: "", deadline: "" });
+    refreshTasks();
+  } catch (err) {
+    console.error("ADD TASK ERROR:", err.response?.data || err.message);
+  }
+};
+
+
+
+
 
   return (
     <form
@@ -36,7 +47,7 @@ function TaskForm({ refreshTasks }) {
         value={form.title}
         onChange={handleChange}
         required
-        className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border border-gray-300 rounded px-3 py-2"
       />
 
       <textarea
@@ -44,7 +55,7 @@ function TaskForm({ refreshTasks }) {
         placeholder="Description"
         value={form.description}
         onChange={handleChange}
-        className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border border-gray-300 rounded px-3 py-2"
       />
 
       <input
@@ -52,7 +63,7 @@ function TaskForm({ refreshTasks }) {
         name="deadline"
         value={form.deadline}
         onChange={handleChange}
-        className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border border-gray-300 rounded px-3 py-2"
       />
 
       <button

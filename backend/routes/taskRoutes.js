@@ -50,5 +50,43 @@ router.delete("/:id", protect, async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+// UPDATE TASK
+router.put("/:id", protect, async (req, res) => {
+  const task = await Task.findById(req.params.id);
+
+  if (!task) {
+    return res.status(404).json({ message: "Task not found" });
+  }
+
+  // sécurité : seulement le propriétaire
+  if (task.user.toString() !== req.user.id) {
+    return res.status(401).json({ message: "Not authorized" });
+  }
+
+  const updatedTask = await Task.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+
+  res.json(updatedTask);
+});
+
+
+// DELETE TASK
+router.delete("/:id", protect, async (req, res) => {
+  const task = await Task.findById(req.params.id);
+
+  if (!task) {
+    return res.status(404).json({ message: "Task not found" });
+  }
+
+  if (task.user.toString() !== req.user.id) {
+    return res.status(401).json({ message: "Not authorized" });
+  }
+
+  await task.deleteOne();
+  res.json({ message: "Task deleted" });
+});
 
 module.exports = router;
