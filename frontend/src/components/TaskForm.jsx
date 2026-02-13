@@ -2,74 +2,49 @@ import { useState } from "react";
 import API from "../api/api";
 
 function TaskForm({ refreshTasks }) {
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    deadline: ""
-  });
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-
-
-
-
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [deadline, setDeadline] = useState("");
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log("SUBMIT CLICKED", form); // 👈 test
+    e.preventDefault();
+    try {
+      await API.post("/tasks", { title, description, deadline });
 
-  try {
-    await API.post("/tasks", form);
-    setForm({ title: "", description: "", deadline: "" });
-    refreshTasks();
-  } catch (err) {
-    console.error("ADD TASK ERROR:", err.response?.data || err.message);
-  }
-};
+      setTitle("");
+      setDescription("");
+      setDeadline("");
 
-
-
-
+      refreshTasks(); // recharge la liste
+    } catch (err) {
+      console.error("Add task error:", err);
+      alert("Error adding task");
+    }
+  };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-gray-50 p-4 rounded-lg shadow mb-6 flex flex-col gap-3"
-    >
-      <h2 className="text-lg font-semibold text-gray-700">Create New Task</h2>
-
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2 border p-4 rounded">
       <input
-        name="title"
+        type="text"
         placeholder="Title"
-        value={form.title}
-        onChange={handleChange}
+        className="border p-2 rounded"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
         required
-        className="border border-gray-300 rounded px-3 py-2"
       />
-
       <textarea
-        name="description"
         placeholder="Description"
-        value={form.description}
-        onChange={handleChange}
-        className="border border-gray-300 rounded px-3 py-2"
+        className="border p-2 rounded"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
       />
-
       <input
         type="date"
-        name="deadline"
-        value={form.deadline}
-        onChange={handleChange}
-        className="border border-gray-300 rounded px-3 py-2"
+        className="border p-2 rounded"
+        value={deadline}
+        onChange={(e) => setDeadline(e.target.value)}
       />
-
-      <button
-        type="submit"
-        className="bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600 transition"
-      >
+      <button className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">
         Add Task
       </button>
     </form>
